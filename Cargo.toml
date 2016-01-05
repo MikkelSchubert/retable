@@ -1,0 +1,9 @@
+[package]
+name = "retable"
+version = "0.1.0"
+authors = ["Mikkel Schubert <MikkelSch@gmail.com>"]
+
+[dependencies]
+argparse = "0.2.1"
+libc = "0.2.2"
+unicode-width = "0.1.3"
