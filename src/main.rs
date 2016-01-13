@@ -26,7 +26,7 @@ use std::env;
 use std::fs::File;
 use std::io::prelude::*;
 
-use argparse::{ArgumentParser, Collect, Print, Store, StoreOption, StoreFalse};
+use argparse::{ArgumentParser, Collect, Print, Store, StoreOption, StoreFalse, StoreTrue};
 use unicode_width::UnicodeWidthStr;
 
 
@@ -195,6 +195,7 @@ fn parse_args() -> Args {
         filenames: vec![],
     };
 
+    let mut any_whitespace = false;
     let mut column_token: Option<String> = None;
     let mut comment_token: Option<String> = None;
     let mut comments_enabled = true;
@@ -207,7 +208,12 @@ fn parse_args() -> Args {
         parser.refer(&mut column_token)
             .add_option(&["--by"], StoreOption,
                         "Split columns using this character; \
-                         defaults to any consecutive whitespace.")
+                         defaults to tabs.")
+            .metavar("CHAR");
+        parser.refer(&mut any_whitespace)
+            .add_option(&["--by-whitespace"], StoreTrue,
+                        "Split columns using any consecutive whitespace; \
+                         defaults to tabs.")
             .metavar("CHAR");
         parser.refer(&mut padding)
             .add_option(&["--padding"], StoreOption,
@@ -245,7 +251,10 @@ fn parse_args() -> Args {
         parser.print_help("retable", &mut help).unwrap();
     }
 
-    args.column_token = parse_cli_char(&column_token, "--by");
+    if !any_whitespace {
+        args.column_token = parse_cli_char(&column_token, "--by");
+    }
+
     args.padding = parse_cli_char(&padding, "--padding").unwrap_or(' ');
     args.comment_token = if comments_enabled {
         parse_cli_char(&comment_token, "--comment").or(Some('#'))
