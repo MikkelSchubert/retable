@@ -252,7 +252,7 @@ fn parse_args() -> Args {
     }
 
     if !any_whitespace {
-        args.column_token = parse_cli_char(&column_token, "--by");
+        args.column_token = parse_cli_char(&column_token, "--by").or(Some('\t'));
     }
 
     args.padding = parse_cli_char(&padding, "--padding").unwrap_or(' ');
