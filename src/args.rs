@@ -16,8 +16,8 @@ pub struct Args {
 
 pub fn parse_args() -> Args {
     let matches =
-        App::new("sstar")
-            .version("0.0.1")
+        App::new("retable")
+            .version("0.0.2")
             .author("Mikkel Schubert")
             .arg(Arg::with_name("--column-token")
                      .help("Split columns using this character [default: \\t]")
