@@ -1,7 +1,6 @@
 use clap::{App, Arg, ArgMatches, Error, ErrorKind};
 
 use std;
-use std::io::prelude::*;
 
 
 #[derive(Debug)]
@@ -71,7 +70,7 @@ pub fn parse_args() -> Args {
     };
 
     if args.filenames.is_empty() && is_stdin_atty() {
-        writeln!(std::io::stderr(), "{}", matches.usage()).unwrap();
+        eprintln!("{}", matches.usage());
         std::process::exit(0);
     }
 

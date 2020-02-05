@@ -33,19 +33,10 @@ use std::io::prelude::*;
 use unicode_width::UnicodeWidthStr;
 
 
-macro_rules! stderr {
-    ($($arg:tt)*) => ({
-        let mut stderr = ::std::io::stderr();
-        if let Err(msg) = writeln!(stderr, $($arg)*) {
-            panic!("Error writing to STDERR: {}", msg);
-        }
-    })
-}
-
 
 /// Splits a string by an optional token, or if no token is given, by any
 /// character whitespace.
-fn split_by<'a>(s: &'a str, token: &'a Option<String>) -> Box<Iterator<Item = &'a str> + 'a> {
+fn split_by<'a>(s: &'a str, token: &'a Option<String>) -> Box<dyn Iterator<Item = &'a str> + 'a> {
     if let Some(ref c) = *token {
         Box::new(s.split(c))
     } else {
@@ -128,7 +119,7 @@ fn retable(text: &str, args: &Args) -> ::std::io::Result<()> {
             }
         }
 
-        try!(stdout.write_all(output.as_bytes()));
+        stdout.write_all(output.as_bytes())?;
 
         output.clear();
     }
@@ -151,10 +142,9 @@ fn read_stdin(buffer: &mut String) -> ::std::io::Result<()> {
 fn read_files(filenames: &[String], buffer: &mut String) -> ::std::io::Result<()> {
     for filename in filenames {
         if filename == "-" {
-            try!(read_stdin(buffer));
+            read_stdin(buffer)?;
         } else {
-            let mut handle = try!(File::open(filename));
-            try!(handle.read_to_string(buffer));
+            File::open(filename)?.read_to_string(buffer)?;
         }
     }
 
@@ -168,18 +158,18 @@ fn retable_main() -> i32 {
 
     if args.filenames.is_empty() {
         if let Err(e) = read_stdin(&mut text) {
-            stderr!("Error reading from STDIN: {}", e);
+            eprintln!("Error reading from STDIN: {}", e);
             return 1;
         }
     } else if let Err(e) = read_files(&args.filenames, &mut text) {
-        stderr!("Error reading input files: {}", e);
+        eprintln!("Error reading input files: {}", e);
         return 1;
     }
 
     if let Err(e) = retable(&text, &args) {
         // BrokenPipe is ignored, to allow use of tools like 'head'.
         if e.kind() != std::io::ErrorKind::BrokenPipe {
-            stderr!("Error retabling file: {}", e);
+            eprintln!("Error retabling file: {}", e);
             return 1;
         }
     }
