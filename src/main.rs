@@ -32,8 +32,6 @@ use std::io::prelude::*;
 
 use unicode_width::UnicodeWidthStr;
 
-
-
 /// Splits a string by an optional token, or if no token is given, by any
 /// character whitespace.
 fn split_by<'a>(s: &'a str, token: &'a Option<String>) -> Box<dyn Iterator<Item = &'a str> + 'a> {
@@ -43,7 +41,6 @@ fn split_by<'a>(s: &'a str, token: &'a Option<String>) -> Box<dyn Iterator<Item 
         Box::new(s.split_whitespace())
     }
 }
-
 
 fn split_comment<'a, 'b>(line: &'a str, token: &'b Option<String>) -> (&'a str, &'a str) {
     if let Some(ref c) = *token {
@@ -55,7 +52,6 @@ fn split_comment<'a, 'b>(line: &'a str, token: &'b Option<String>) -> (&'a str, 
         (line, "")
     }
 }
-
 
 fn calculate_field_sizes(text: &str, args: &Args) -> Vec<usize> {
     let mut sizes = vec![];
@@ -82,7 +78,6 @@ fn calculate_field_sizes(text: &str, args: &Args) -> Vec<usize> {
 
     sizes
 }
-
 
 fn retable(text: &str, args: &Args) -> ::std::io::Result<()> {
     let sizes = calculate_field_sizes(text, args);
@@ -127,7 +122,6 @@ fn retable(text: &str, args: &Args) -> ::std::io::Result<()> {
     Ok(())
 }
 
-
 fn read_stdin(buffer: &mut String) -> ::std::io::Result<()> {
     let mut stdin = ::std::io::stdin();
 
@@ -137,7 +131,6 @@ fn read_stdin(buffer: &mut String) -> ::std::io::Result<()> {
         Ok(())
     }
 }
-
 
 fn read_files(filenames: &[String], buffer: &mut String) -> ::std::io::Result<()> {
     for filename in filenames {
@@ -150,7 +143,6 @@ fn read_files(filenames: &[String], buffer: &mut String) -> ::std::io::Result<()
 
     Ok(())
 }
-
 
 fn retable_main() -> i32 {
     let args = parse_args();
@@ -176,7 +168,6 @@ fn retable_main() -> i32 {
 
     0
 }
-
 
 fn main() {
     ::std::process::exit(retable_main());
