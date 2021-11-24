@@ -22,7 +22,7 @@ pub fn parse_args() -> Args {
         )
         .arg(
             Arg::with_name("--by-whitespace")
-                .help("Split columns using any consecutive whitespace.")
+                .help("Split columns using any consecutive whitespace")
                 .long("--by-whitespace"),
         )
         .arg(
