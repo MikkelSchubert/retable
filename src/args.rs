@@ -1,7 +1,5 @@
 use clap::{App, Arg, ArgMatches, Error, ErrorKind};
 
-use std;
-
 
 #[derive(Debug)]
 pub struct Args {
