@@ -44,18 +44,16 @@ pub fn parse_args() -> Args {
                      .long("--comment-token")
                      .value_name("CHAR")
                      .takes_value(true))
-            .arg(Arg::with_name("--no-comments")
-                     .help("Use to disable handling of comments.")
-                     .long("--no-comments"))
             .arg(Arg::with_name("filenames")
-                     .help("Use to disable handling of comments.")
+                     .help("One or more text files to re-format. Text is read from \
+                    STDIN if no files are specified and STDIN is not a terminal")
                      .value_name("FILE")
                      .multiple(true))
             .get_matches();
 
     let mut args = Args {
         column_token: Some(parse_string(&matches, "--column-token", "\t")),
-        comment_token: Some(parse_string(&matches, "--comment-token", "#")),
+        comment_token: matches.value_of("--comment-token").map(|v| v.to_owned()),
         padding: parse_char(&matches, "--padding", ' '),
         width: value_t!(matches.value_of("--width"), usize).unwrap_or_else(|e| e.exit()),
         filenames: parse_strings(&matches, "filenames"),
@@ -63,10 +61,6 @@ pub fn parse_args() -> Args {
 
     if matches.is_present("--by-whitespace") {
         args.column_token = None
-    };
-
-    if matches.is_present("--no-comments") {
-        args.comment_token = None;
     };
 
     if args.filenames.is_empty() && is_stdin_atty() {
