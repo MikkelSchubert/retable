@@ -32,8 +32,7 @@ use std::io::prelude::*;
 
 use unicode_width::UnicodeWidthStr;
 
-/// Splits a string by an optional token, or if no token is given, by any
-/// character whitespace.
+/// Splits a string by an optional token, or if no token is given, by any whitespace.
 fn split_by<'a>(s: &'a str, token: &'a Option<String>) -> Box<dyn Iterator<Item = &'a str> + 'a> {
     if let Some(ref c) = *token {
         Box::new(s.split(c))
@@ -42,25 +41,25 @@ fn split_by<'a>(s: &'a str, token: &'a Option<String>) -> Box<dyn Iterator<Item 
     }
 }
 
-fn split_comment<'a, 'b>(line: &'a str, token: &'b Option<String>) -> (&'a str, &'a str) {
-    if let Some(ref c) = *token {
-        match line.find(c) {
-            Some(index) => (&line[..index], &line[index..]),
-            None => (line, ""),
-        }
-    } else {
-        (line, "")
+/// Returns true if line is a comment
+fn is_comment(s: &str, token: &Option<String>) -> bool {
+    if let Some(token) = token {
+        return s.trim_start().starts_with(token);
     }
+
+    return false;
 }
 
 fn calculate_field_sizes(text: &str, args: &Args) -> Vec<usize> {
     let mut sizes = vec![];
 
     for line in text.split('\n') {
-        let (line, _) = split_comment(line, &args.comment_token);
+        if is_comment(line, &args.comment_token) {
+            continue;
+        }
 
         for (index, field) in split_by(line, &args.column_token).enumerate() {
-            if index + 1 >= sizes.len() {
+            if index >= sizes.len() {
                 sizes.push(0);
             }
 
@@ -86,14 +85,12 @@ fn retable(text: &str, args: &Args) -> ::std::io::Result<()> {
     let mut output = String::new();
 
     for (item, line) in text.split('\n').enumerate() {
-        let (line, comment) = split_comment(line, &args.comment_token);
         if item > 0 {
             output.push('\n');
         }
 
-        if line.is_empty() {
-            // Empty line, or line containing just a comment
-            output.push_str(comment);
+        if is_comment(line, &args.comment_token) {
+            output.push_str(line);
         } else {
             let mut last_len = 0;
             for (index, field) in split_by(line, &args.column_token).enumerate() {
@@ -106,12 +103,8 @@ fn retable(text: &str, args: &Args) -> ::std::io::Result<()> {
                 }
             }
 
-            if comment.is_empty() {
-                // Remove trailing padding to create ragged rows
-                output.truncate(last_len);
-            } else {
-                output.push_str(comment);
-            }
+            // Remove trailing padding to create ragged rows
+            output.truncate(last_len);
         }
 
         stdout.write_all(output.as_bytes())?;
