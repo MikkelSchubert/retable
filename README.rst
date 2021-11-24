@@ -31,24 +31,23 @@ Usage
 
 ::
 
-    Usage:
-        retable [OPTIONS] [FILENAMES ...]
+    USAGE:
+        retable [FLAGS] [OPTIONS] [FILE]...
 
+    FLAGS:
+            --by-whitespace    Split columns using any consecutive whitespace
+        -h, --help             Prints help information
+        -V, --version          Prints version information
 
-    positional arguments:
-      filenames             Zero more input files; if no files are specified, input
-                            is read from STDIN instead.
+    OPTIONS:
+            --column-token <CHAR>     Split columns using this character [default: \t]
+            --comment-token <CHAR>    Ignore text following this character; comments are
+                                      still printed, but does not influence indentation
+            --padding <CHAR>          Character to use as padding when printing the
+                                      table [default: ' ']
+            --width <N>               Number of spaces characters to add between columns
+                                      [default: 2]
 
-    optional arguments:
-      -h,--help             show this help message and exit
-      --by CHAR             Split columns using this character; defaults to tabs.
-      --by-whitespace       Split columns using any consecutive whitespace;
-                            defaults to tabs.
-      --padding CHAR        Character to use as padding; uses space by default.
-      --width N             Number of spaces characters to add between columns.
-                            defaults to 2 characters.
-      --comment CHAR        Ignore text following this character; comments are
-                            still printed, but does not influence indentation.
-      --no-comments         If set, retable assumes that the text does not contain
-                            comments.
-      -v,--version          Show version
+    ARGS:
+        <FILE>...    One or more text files to re-format. Text is read from STDIN if no
+                     files are specified and STDIN is not a terminal
